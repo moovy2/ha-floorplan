@@ -1,28 +1,8 @@
-<!--
-Please remove the disclaimer - cause it's not work-in-progrss anymore
--->
-<!--
-<table align="center">
-<tr>
-<td>
 <h1 align="center">
-⚠️ WORK IN PROGRESS ⚠️ 
-</h1>
-<p align="center">
-You're welcome to test it, but we suggest you to use the <a href="https://github.com/ExperienceLovelace/lovelace-floorplan" target="_blank">current version</a> for daily usage.
-</p>
-</td>
-</tr>
-</table>
-<br><br>
-<hr>
--->
-
-<h1 align="center">
-	<img src="/docs/assets/images/logo-200x200.png">
+	<img src="https://user-images.githubusercontent.com/3549445/293683009-196cd771-7d29-4975-a741-0a5c8a76e095.png">
 	<br>
   <br>
-  HA Floorplan
+  ha-floorplan
 </h1>
 
 
@@ -64,20 +44,43 @@ You're welcome to test it, but we suggest you to use the <a href="https://github
 
 <hr>
 
+
+<a title="Click to see the live floorplan example" href="https://experiencelovelace.github.io/ha-floorplan/docs/example-floorplanner-home/">
+<img style="border: 1px solid #26c7fb;border-radius: 3px;max-width: 350px;width: 100%;box-sizing: border-box;margin:0 auto;display:block;text-align:center;" src="https://user-images.githubusercontent.com/3549445/293683054-a110a5fe-72d3-4004-970b-1e07159e5577.png" alt="SVG Preview">
+</a>
+
+## Draw it and bring it to life
+
+This tool expands way beyond creating just floorplans. If you can draw it in an SVG file, you can bring it to life with ha-floorplan. Explore endless possibilities and customize your home automation experience to your liking.
+
+## Getting started
+
+We'll suggest you to visit our [Installation](https://experiencelovelace.github.io/ha-floorplan/docs/quick-start/) guide.
+
+If you're unsure on where to start in the creation process, we'll suggest you to check our  [Live Examples](https://experiencelovelace.github.io/ha-floorplan/docs/examples/).
+
+Find more documentation on how to use each action and functions, by visiting the [Usage](https://experiencelovelace.github.io/ha-floorplan/docs/usage/) page.
+
+
+## Features
+
+- Make Floorplan(s) with SVG-files
+- Trigger states, visualize states and more
+- Call services and more, for even more options
+- Use as Lovelace-card, or as a panel
+- _It's hard to mention everything in a list like this, so **give it a try**_ 🥳
+
 <br>
 
-# Getting started
+<hr>
 
-If you're searching for __getting started__ information, good __examples__, and details about __usage__, please visit our 
-👉 **[documentation](https://experiencelovelace.github.io/ha-floorplan/)** 👈, hosted on [GitHub Page](https://experiencelovelace.github.io/ha-floorplan/).
+#### Ressource template for Home Assistant
 
-<br>
-
-
-<span align="center">
-	<a href="https://experiencelovelace.github.io/ha-floorplan/docs/example-floorplanner-home/" target="_blank" title="See it in action - Go to our docs"><img src="/docs/assets/images/home/floorplan-background_with_floorplanner.png"></a>
-</span>
-
+```yaml
+resources:
+  - url: /hacsfiles/ha-floorplan/floorplan.js
+    type: module
+```
 
 <hr>
 <br>

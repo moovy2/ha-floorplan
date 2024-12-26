@@ -13,6 +13,11 @@ import {
   CustomActionConfig,
 } from '../../../lib/homeassistant/lovelace/types';
 
+import {
+  FloorplanSvgElementInfo,
+  FloorplanRuleInfo
+} from './floorplan-info';
+
 export class FloorplanConfig {
   // Core features
   image!: FloorplanImageConfig | string;
@@ -75,6 +80,7 @@ export class FloorplanImageConfig {
   location!: string;
   cache!: boolean;
   sizes!: FloorplanImageSize[];
+  use_screen_width?: boolean;
 }
 
 export class FloorplanImageSize {
@@ -120,6 +126,7 @@ export class FloorplanRuleConfig {
     | FloorplanActionConfig[]
     | string
     | false;
+  hover_info_filter!: string[];
 }
 
 export class FloorplanRuleEntityElementConfig {
@@ -130,4 +137,11 @@ export class FloorplanRuleEntityElementConfig {
 export class FloorplanVariableConfig {
   name!: string;
   value!: unknown;
+}
+
+export interface FloorplanEventActionCallDetail {
+  actionConfig: FloorplanCallServiceActionConfig;
+  entityId?: string;
+  svgElementInfo?: FloorplanSvgElementInfo;
+  ruleInfo?: FloorplanRuleInfo;
 }

@@ -9,14 +9,15 @@ import {
   CSSResult,
   html,
   LitElement,
-  property,
   TemplateResult,
   PropertyValues,
-} from 'lit-element';
+} from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 import '../floorplan-card/floorplan-card';
 import '../floorplan-panel/floorplan-panel';
 import './code-block';
 
+@customElement('floorplan-example')
 export class FloorplanExanpleElement extends LitElement {
   @property({ type: Object }) public hass!: HomeAssistant;
   @property({ type: Object }) public config!:
@@ -107,8 +108,4 @@ export class FloorplanExanpleElement extends LitElement {
   setHass(hass: HomeAssistant): void {
     this.hass = hass;
   }
-}
-
-if (!customElements.get('floorplan-example')) {
-  customElements.define('floorplan-example', FloorplanExanpleElement);
 }

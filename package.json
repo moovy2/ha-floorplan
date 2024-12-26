@@ -1,63 +1,66 @@
 {
   "name": "ha-floorplan",
-  "version": "1.0.30",
+  "version": "1.0.48",
   "description": "Floorplan for Home Assistant",
-  "main": "index.js",
+  "homepage": "https://experiencelovelace.github.io/ha-floorplan",
+  "keywords": [
+    "homeassistant",
+    "home assisant",
+    "floorplan",
+    "svg"
+  ],
+  "bugs": {
+    "url": "https://github.com/ExperienceLovelace/ha-floorplan/issues"
+  },
+  "license": "ISC",
+  "contributors": [
+    {
+      "name": "Petar Kožul",
+      "email": "pkozul@yahoo.com",
+      "url": "https://github.com/pkozul"
+    },
+    {
+      "name": "Tobias Nordahl Kristensen",
+      "email": "tobiasnordahl@gmail.com",
+      "url": "https://github.com/exetico"
+    }
+  ],
+  "main": "dist/floorplan.js",
+  "repository": "https://github.com/ExperienceLovelace/ha-floorplan",
   "scripts": {
-    "clean": "shx rm -rf dist/*",
-    "start": "npm run clean && parcel docs/_docs/floorplan/demo.html",
-    "build:demo": "npm run clean && parcel build docs/_docs/floorplan/demo.html",
-    "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
-    "build": "cross-env NODE_ENV=production npm run clean && parcel build src/index.ts --no-content-hash --no-source-maps --out-file floorplan",
-    "build:no-minify": "cross-env NODE_ENV=production npm run clean && parcel build src/index.ts --no-source-maps --no-minify --out-file floorplan",
-    "build:docs": "cross-env NODE_ENV=production parcel build src/components/floorplan-examples/floorplan-examples.ts --no-content-hash --no-source-maps --out-dir docs/_docs/floorplan --out-file floorplan-examples --public-url ./",
+    "start": "webpack-dev-server",
+    "build": "webpack --env production",
+    "build:dev": "webpack",
+    "analyze": "webpack --profile --json > stats.json && webpack-bundle-analyzer ./stats.json",
     "update:docs": "docker run -it --rm --volume=${PWD}/docs:/srv/jekyll -p 4000:4000 jekyll/jekyll bundle update github-pages",
     "serve:docs": "docker run -it --rm --volume=${PWD}/docs:/srv/jekyll -p 4000:4000 jekyll/jekyll jekyll serve --incremental",
-    "prettier": "prettier --config .prettierrc 'src/**/**/*.ts' 'src/**/*.ts' --write"
-  },
-  "staticFiles": {
-    "staticPath": [
-      {
-        "staticPath": "docs/_docs/floorplan",
-        "env": "development"
-      }
-    ]
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/js-yaml": "^4.0.2",
-    "@types/node": "^16.3.2",
-    "@types/strftime": "^0.9.3",
-    "@typescript-eslint/eslint-plugin": "^4.28.3",
-    "@typescript-eslint/parser": "^4.28.3",
-    "babel-core": "^6.26.3",
-    "copyfiles": "^2.4.1",
-    "cross-env": "^7.0.3",
-    "eslint": "^7.30.0",
-    "is-svg": "^4.3.1",
-    "minimist": "^1.2.5",
-    "node-forge": "^1.0.0",
-    "parcel-bundler": "^1.12.4",
-    "parcel-plugin-static-files-copy": "^2.6.0",
-    "parcel-plugin-wrapper": "^0.2.3",
-    "prettier": "^2.3.2",
-    "shx": "^0.3.3",
-    "typescript": "^4.3.5"
+    "prettier": "prettier --config .prettierrc \"src/**/*.ts\" \"src/**/*.ts\" --write",
+    "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
-    "acorn": "^8.4.1",
-    "highlight.js": "^11.1.0",
-    "home-assistant-js-websocket": "^5.10.0",
+    "home-assistant-js-websocket": "^8.0.1",
     "js-yaml": "^4.1.0",
-    "lit-element": "^2.5.1",
-    "strftime": "^0.10.0",
-    "superstruct": "^0.15.2",
-    "sval": "^0.4.8",
-    "timeago.js": "^4.0.2"
+    "lit": "^2.4.1",
+    "parse-duration": "^1.0.2",
+    "strftime": "^0.10.1",
+    "superstruct": "^1.0.3",
+    "sval": "^0.4.8"
   },
-  "browserslist": [
-    "last 1 Chrome version"
-  ]
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.5",
+    "@types/node": "^18.11.10",
+    "@types/strftime": "^0.9.4",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "eslint": "^8.56.0",
+    "html-loader": "^4.2.0",
+    "prettier": "^2.8.0",
+    "ts-loader": "^9.4.2",
+    "typescript": "^4.9.3",
+    "webpack": "^5.94.0",
+    "webpack-bundle-analyzer": "^4.10.0",
+    "webpack-cli": "^5.0.0",
+    "webpack-dev-server": "^4.15.0"
+  }
 }

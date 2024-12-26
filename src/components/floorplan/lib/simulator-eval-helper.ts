@@ -1,15 +1,14 @@
 import { HomeAssistant } from '../../../lib/homeassistant/types';
 import { HassEntity } from '../../floorplan-examples/homeassistant';
-import { FloorplanConfig, FloorplanCallServiceActionConfig } from './/floorplan-config';
-import { FloorplanRuleInfo, FloorplanSvgElementInfo } from './floorplan-info';
+import { FloorplanConfig } from './/floorplan-config';
 import { ColorUtil } from './color-util';
 import { DateUtil } from './date-util';
 import Sval from 'sval';
 import { getErrorMessage } from './error-util';
 import estree from 'estree';
-import { dispatchFloorplanActionCallEvent } from './events';
+import { TimedHassEntity } from '../../floorplan-examples/types';
 
-export class EvalHelper {
+export class SimulatorEvalHelper {
   static cache: { [key: string]: estree.Node } = {};
 
   static interpreter = new Sval({ ecmaVer: 2019, sandBox: true });
@@ -17,7 +16,7 @@ export class EvalHelper {
 
   static expression: string;
   static functionBody: string;
-  static entityState: HassEntity | undefined;
+  static entityState: HassEntity | TimedHassEntity | undefined;
 
   static util = {
     color: ColorUtil,
@@ -38,18 +37,11 @@ export class EvalHelper {
 
   static evaluate(
     expression: string,
-    hass: HomeAssistant,
-    config: FloorplanConfig,
-    entityId?: string,
-    svgElement?: SVGGraphicsElement,
-    svgElements?: { [elementId: string]: SVGGraphicsElement },
-    functions?: unknown,
-    svgElementInfo?: FloorplanSvgElementInfo,
-    ruleInfo?: FloorplanRuleInfo
+    entityState: HassEntity | TimedHassEntity,
   ): unknown {
     this.expression = expression.trim();
 
-    const cacheKey = `${this.expression}_${svgElement ?? ''}`;
+    const cacheKey = `${this.expression}_${entityState.entity_id ?? ''}`;
 
     this.parsedFunction = this.cache[cacheKey];
     if (this.parsedFunction === undefined) {
@@ -83,37 +75,13 @@ export class EvalHelper {
       this.cache[cacheKey] = this.parsedFunction;
 
       // Add global modules in interpreter (static data)
-      this.interpreter.import('config', config);
       this.interpreter.import('util', this.util);
     }
 
-    this.entityState = entityId ? hass.states[entityId] : undefined;
+    this.entityState = entityState;
 
     // Add global modules in interpreter (dynamic data)
-    this.interpreter.import('functions', functions);
     this.interpreter.import('entity', this.entityState);
-    this.interpreter.import('entities', hass.states);
-    this.interpreter.import('states', hass.states);
-    this.interpreter.import('hass', hass);
-    this.interpreter.import('element', svgElement);
-    this.interpreter.import('elements', svgElements);
-
-    // Let the user call "action" function (to call our service call-handler)
-    this.interpreter.import('action',
-     (actionConfig :
-        FloorplanCallServiceActionConfig) => {
-        // Set default action
-        actionConfig.action = actionConfig?.action || 'call-service';
-
-        // Dispatch event to call service
-        dispatchFloorplanActionCallEvent(svgElement as SVGGraphicsElement, {
-          actionConfig,
-          entityId,
-          svgElementInfo,
-          ruleInfo,
-        });
-    }
-  );
 
     try {
       this.interpreter.run(this.parsedFunction as estree.Node);

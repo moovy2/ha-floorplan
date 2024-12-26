@@ -1,4 +1,6 @@
 {
-  "name": "Ha Floorplan",
-  "filename": "floorplan.js"
+  "name": "ha-floorplan 🖌🎨 | Your imagination just became the new limit",
+  "filename": "floorplan.js",
+  "render_readme": true,
+  "homeassistant": "2024.6.0"
 }

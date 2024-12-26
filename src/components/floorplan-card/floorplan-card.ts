@@ -6,14 +6,15 @@ import {
   CSSResult,
   html,
   LitElement,
-  property,
   TemplateResult,
   PropertyValues,
-} from 'lit-element';
+} from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 import { ShadowDomHelper } from './../floorplan/lib/shadow-dom-helper';
 import '../floorplan/floorplan-element';
-import { styleMap, StyleInfo } from 'lit-html/directives/style-map';
+import { styleMap, StyleInfo } from 'lit-html/directives/style-map.js';
 
+@customElement('floorplan-card')
 export class FloorplanCard extends LitElement implements LovelaceCard {
   @property({ type: Object }) public hass!: HomeAssistant;
   @property({ type: Boolean }) public isPanel!: boolean;
@@ -129,8 +130,4 @@ export class FloorplanCard extends LitElement implements LovelaceCard {
 
     super.update(changedProperties);
   }
-}
-
-if (!customElements.get('floorplan-card')) {
-  customElements.define('floorplan-card', FloorplanCard);
 }

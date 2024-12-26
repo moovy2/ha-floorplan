@@ -1,4 +1,4 @@
-import * as yaml from 'js-yaml';
+import yaml from 'js-yaml';
 
 export class Utils {
   /***************************************************************************************************************************/
@@ -15,12 +15,12 @@ export class Utils {
     element.classList
       ? element.classList.remove(className)
       : (element.className = element.className.replace(
-          new RegExp(
-            '(^|\\b)' + className.split(' ').join('|') + '(\\b|$)',
-            'gi'
-          ),
-          ' '
-        ));
+        new RegExp(
+          '(^|\\b)' + className.split(' ').join('|') + '(\\b|$)',
+          'gi'
+        ),
+        ' '
+      ));
   }
 
   static hassClass(element: Element, className: string): boolean {
@@ -41,6 +41,14 @@ export class Utils {
     } else {
       this.addClass(element, className);
     }
+  }
+
+  static datasetSet(
+    element: SVGGraphicsElement | HTMLElement,
+    key: string,
+    value: string
+  ): void {
+    element.dataset[key] = value;
   }
 
   static getStyles(
@@ -71,23 +79,75 @@ export class Utils {
 
     for (let i = 0; i < styles.length; i++) {
       const parts = styles[i].split(':').map((x) => x.trim());
-      element.style.setProperty(parts[0], parts[1]);
+      const isImportant = parts[1].includes('!important');
+      parts[1] = parts[1].replace(/!important/g, '').trim();
+      element.style.setProperty(parts[0], parts[1], isImportant ? 'important' : '');
     }
   }
 
   static setText(
     textElement: HTMLElement | SVGGraphicsElement,
-    text: string
+    text: string,
+    shiftAxisY: string
   ): void {
-    let tspanElement = textElement.querySelector('tspan');
-    if (!tspanElement) {
-      tspanElement = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'tspan'
-      );
-      textElement.appendChild(tspanElement);
+    // If textElement is not a text element, try to find the first text element
+    if (!(textElement instanceof SVGTextElement)) {
+      textElement = textElement.querySelector('text') || textElement;
     }
-    tspanElement.textContent = text;
+    // If text contains linebreakes, let's split the text into multiple tspans, cause tspans doesnt allow linebreakes
+    // Replace all \\n, as it's a excape character for \n in YAML handled through Home Assistant 
+    const texts = text.replace(/\\n/g, '\n').split('\n');
+    const textContainsLinebreaks = texts.length > 1;
+
+    // Get existing tspan element if exists
+    const currentTspanElement = textElement.querySelector('tspan');
+
+    // If more than one tspan required, we'd need to make some adjustments
+    if (textContainsLinebreaks) {
+      // Check if textElement has a tspan and if it does, get the x and y attributes
+      const tspanX = currentTspanElement?.getAttribute('x');
+      const tspanY = currentTspanElement?.getAttribute('y');
+      
+      // If tspan has x and y attributes, set the text element to the same values
+      if (tspanX && !textElement.getAttribute('x')) textElement.setAttribute('x', tspanX);
+      if (tspanY && !textElement.getAttribute('y')) textElement.setAttribute('y', tspanY);
+
+      // Save existing tspan element if exists
+      const existingTspanElement = textElement.querySelector('tspan') || false;
+
+      // Empty the current text element
+      textElement.textContent = ''; 
+
+      // Note the user about the intended change in a dataset
+      textElement.dataset.ha_floorplan_notice = 'The text_set function split your text into multiple tspans. Only the style of the first tspan is preserved. The style from the original tspan is reused on every tspan. The x and y are calculated on the basis of the first tspan or text-element.';
+
+      // Get x location of text, if no found, set to 0
+      const textXPosition = textElement.getAttribute('x') || '0';
+
+      // Dy indicates a shift along the y-axis, for every tspan in the text element except the first one
+      const dy = shiftAxisY ? shiftAxisY : '1em'
+
+      texts.forEach((textPart, i) => {
+        const tspanElement = document.createElementNS(
+          'http://www.w3.org/2000/svg', 'tspan'
+        );
+        tspanElement.textContent = textPart;
+
+        // Add x + dy if more than one string (linebreakes)
+        tspanElement.setAttribute('x', textXPosition);
+        tspanElement.setAttribute('dy', (i >= 1 ? dy : '0'));
+
+        // If existing tspan element contains a style, set it to the new tspan element
+        if (existingTspanElement) {
+          const style = existingTspanElement.getAttribute('style');
+          if (style) tspanElement.setAttribute('style', style);
+        }
+        textElement.appendChild(tspanElement);
+      })
+    }else{
+      const textTarget = currentTspanElement || textElement;
+      textTarget.textContent = text;
+    }
   }
 
   static waitForChildNodes(
@@ -161,7 +221,7 @@ export class Utils {
         throw new Error(`Error fetching resource`);
       }
     } catch (err) {
-      throw new URIError(`${resourceUrl}: ${err.message}`);
+      throw new URIError(`${resourceUrl}: ${(err as Error).message}`);
     }
   }
 
@@ -197,7 +257,7 @@ export class Utils {
         throw new Error(`Error fetching resource`);
       }
     } catch (err) {
-      throw new URIError(`${resourceUrl}: ${err.message}`);
+      throw new URIError(`${resourceUrl}: ${(err as Error).message}`);
     }
   }
 
@@ -258,9 +318,7 @@ export class Utils {
   }
 
   static cacheBuster(url: string): string {
-    return `${url}${
-      url.indexOf('?') >= 0 ? '&' : '?'
-    }_=${new Date().getTime()}`;
+    return `${url}${url.includes('?') ? '&' : '?'}_=${new Date().getTime()}`;
   }
 
   static equal(a: unknown, b: unknown): boolean {
@@ -323,5 +381,19 @@ export class Utils {
       );
 
     return isMobile;
+  }
+
+  static deviceId(): string {
+    const ID_BROWER_KEY = 'ha-floorplan-device-id';
+
+    if (!localStorage[ID_BROWER_KEY]) {
+      const s4 = () => {
+        return Math.floor((1 + Math.random()) * 100000)
+          .toString(16)
+          .substring(1);
+      };
+      localStorage[ID_BROWER_KEY] = `${s4()}${s4()}_${s4()}${s4()}`;
+    }
+    return localStorage[ID_BROWER_KEY];
   }
 }

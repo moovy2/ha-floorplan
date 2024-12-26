@@ -89,6 +89,13 @@ typings/
 
 # Parcel
 .parcel-cache
+parcel-bundle-reports
 
 # Jekyll
 _site/
+
+# Webpack bundle analyzer
+stats.json
+
+# Local dist folder
+dist_local
